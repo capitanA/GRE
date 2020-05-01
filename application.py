@@ -1,6 +1,8 @@
 from flask import Flask
 from config import ProductionConfig
-from flask import blueprints,abort
+import blueprints
+from importlib import import_module
+import ipdb
 
 
 def configure_database(app):
@@ -12,7 +14,10 @@ def configure_logger(app):
 
 
 def configure_blueprints(app):
-    pass
+    for blueprint in blueprints.__all__:
+        bp = import_module("blueprints.{}".format(blueprint))
+        for route in bp.__all__:
+            app.register_blueprint(getattr(bp, route))
 
 
 def create_app(configuration=None):
